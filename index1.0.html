@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <title>US Flights Information 2008</title>
+ 
+ <script src="js/d3.min.js"></script>
+ <script src="js/queue.v1.min.js"></script>
+ <script src="js/topojson.v1.min.js"></script>
+
+<style type="text/css">
+
+  h1 {
+    font-family: sans-serif;
+  }
+
+  p {
+  font-family: sans-serif;
+  color: darkgrey;
+}
+
+  div.tooltip {
+   position: absolute;
+   text-align: left;
+   width: 150px;
+   height: 25px;
+   padding: 2px;
+   font-size: 10px;
+   border: 1px;
+   border-radius: 8px;
+   pointer-events: none;
+   font-family: sans-serif;
+  }
+
+  .bar {
+
+    fill: ;
+  }
+
+  .bar:hover {
+    fill: orange;
+  }
+
+  .circle{
+
+    stroke: white;
+    stroke-width: 2;
+  }
+
+  .circle:hover{
+    fill:orange;
+  }
+
+
+  .line {
+  stroke: lightgrey;
+}
+
+  .svgMap text {
+  fill: black;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+  .axis path, .axis line {
+      fill: none;
+      stroke: lightgrey;
+      shape-rendering: crispEdges;
+  }
+
+  .axis text {
+      font-family: sans-serif;
+      font-size: 8px;
+      color: lightgrey;
+  }
+
+</style>
+</head>
+
+<body>
+<h1>US Flight Information 2008</h1>
+<p> Do you want to know which flight route has better performance? Hover over the map below, click on any origin airport of interest and compare flight performance data. For example, will you fly from Laguardia (LGA) or JFK to Chicago (ORD)? Both my personal experience and statistics suggest that I should better go with JFK. <p>
+
+
+<script type="text/javascript">
+
+//define parameters for canvas
+var width = 960,
+ height = 500,
+ active = d3.select("JFK"); // NEW
+
+//define tooltip
+var div = d3.select("body").append("div")
+ .attr("class", "tooltip")
+ .style("opacity", 1.0);
+
+var div2 = d3.select("body").append("div")
+ .attr("class", "tooltip")
+ .style("opacity", 1.0);
+ 
+// create map svg
+var svgMap = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("margin", "10px auto");
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var projection = d3.geo.mercator()
+    .scale(900) 
+    .center([-96, 37.5])
+
+//create parameters for bar charts
+var w = width/5 ;
+var wAirport = w;
+var barHeight = 15;
+var barPadding = 2;
+var barLeftPadding = 8;
+var opacityCircle = 0.7;
+var formatAsPercentage = d3.format(".2%");
+
+//create headers
+var headers = ['Destinaton:#Flights(City, State)','Cancellation Rate', 'Departure Delay Rate', 
+              'Arrival Delay Rate', 'Diversion Rate'];
+var header = d3.select("body")
+               .append("svg")
+               .attr("width", width)
+               .attr("height", barHeight*3);
+
+header.selectAll('text')
+      .data(headers)
+      .enter()
+      .append('text')
+      .text( function(d) {return d;})
+      .attr("x", function(d, i) {return (w*i + barLeftPadding); })
+      .attr("y", function(d) {return barHeight * 2;})
+      .attr("text-anchor", "left")
+      .attr("font-family", "sans-serif") 
+      .attr("font-size", "12px")
+      .attr("fill", "black")
+      .attr("font-weight","bold"); 
+
+
+d3.csv("data/data.csv", function(error, data) {
+  if (error) throw error;
+
+  var airports = {};
+  var links = {};
+  var flights = {};
+  
+    data.forEach(function (d) { 
+    // make a dict to store geo info of origin airport
+      if (d.Origin in airports) {
+        airports[d.Origin].flightCounts += parseInt(d.Flights_Count);
+      } else {
+        airports[d.Origin] = {
+          origin: d.Origin,
+          flightCounts: parseInt(d.Flights_Count),
+          long: parseFloat(d.Origin_long),
+          lat: parseFloat(d.Origin_lat), 
+          airport: d.Origin_airport,
+          city: d.Origin_city,
+          state: d.Origin_state
+        };
+      }
+      //make a dict for storing flight stats
+      if (d.Origin in flights) {
+         flights[d.Origin]['destination'].push(d.Dest +  ": " + parseInt(d.Flights_Count).toLocaleString() + " (" + d.Dest_city + ', ' + d.Dest_state +")");
+         flights[d.Origin]['destCoordinates'].push([parseFloat(d.Dest_long), parseFloat(d.Dest_lat), parseInt(d.Flights_Count)]);
+         flights[d.Origin]['cancelRate'].push(parseFloat(d.Cancelled));
+         flights[d.Origin]['divertRate'].push(parseFloat(d.Diverted));
+         flights[d.Origin]['arrDelayRate'].push(parseFloat(d.ArrDelay_YN));
+         flights[d.Origin]['depDelayRate'].push(parseFloat(d.DepDelay_YN));
+         flights[d.Origin]['flightsCount'].push(parseInt(d.Flights_Count));
+      } else {
+         flights[d.Origin] = {};
+         flights[d.Origin]['originCoordinates'] = [parseFloat(d.Origin_long), parseFloat(d.Origin_lat)];
+         flights[d.Origin]['destination'] = [];
+         flights[d.Origin]['destCoordinates'] = [];
+         flights[d.Origin]['cancelRate'] = [];
+         flights[d.Origin]['divertRate'] = [];
+         flights[d.Origin]['arrDelayRate'] = [];
+         flights[d.Origin]['depDelayRate']  = [];
+         flights[d.Origin]['flightsCount'] = [];
+      }
+    });
+
+    var airportsArray = [];
+    for (var key in airports)
+    {
+      airportsArray.push(airports[key]);
+    };
+
+  //add circles
+  svgMap.selectAll(".circle")
+    .data(airportsArray).enter()
+    .append("circle")
+    .attr("class","circle")
+    .attr("id", function (d) { return d.origin;})
+    .attr("cx", function (d) { return projection([d.long, d.lat])[0]; })
+    .attr("cy", function (d) { return projection([d.long, d.lat])[1]; })
+    .attr("r", function (d) {  return Math.log(d.flightCounts); }) 
+    .attr("fill", "#1f77b4")
+    .attr('opacity', opacityCircle)
+    //interative tooltip
+    .on("mouseover", function(d) {
+      d3.select(this).transition().duration(100)
+        .style("opacity", opacityCircle);
+
+      div.transition().duration(100)
+         .style("opacity", opacityCircle);
+          
+      div.text(parseInt(d.flightCounts).toLocaleString() + " flights originating from " + d.airport + " in " + d.city + ", " +  d.state )
+              .style("left", (parseFloat(d3.select(this).attr("cx")) + 50) + "px")
+              .style("top", (parseFloat(d3.select(this).attr("cy")) + 25)  + "px");
+
+  })
+
+    .on("mouseout", function() {
+       
+       d3.select(this)
+        .transition().duration(100)
+        .style("opacity", opacityCircle);
+
+       div.transition().duration(100)
+        .style("opacity", 0);
+    })
+
+    .on('click', function updateBars(d) {
+
+          function drawLines() {
+            var start = flights[d.origin]['originCoordinates']; 
+            var end = flights[d.origin]['destCoordinates'];
+
+            var lines = svgMap.selectAll('.line').data(end);
+
+                lines.enter()
+                  .append('line')
+                  .attr("class", "line")
+                  .attr({
+                    "x1": projection(start)[0],
+                    'y1': projection(start)[1],
+                    "x2": function(d) {return projection(d)[0];},
+                    "y2": function(d) {return projection(d)[1];},
+                    "stroke-width": function(d) {return Math.log(d[2]/300);}, 
+                    "opacity": 0.5,
+                  })
+          }
+
+          function drawAirport(key) {
+            //pull data
+            var airportName = flights[d.origin][key];
+
+            //Create SVG for airport
+            var svgAirport = d3.select(".airportData")
+                  .append("svg")
+                  .attr("class", "svgAirport")
+                  .attr("width", wAirport)
+                  .attr("height", (barHeight + barPadding*2) * (airportName.length + 3) );
+            //Create labels
+            var airportDraw = svgAirport.selectAll("text")
+                                        .data(airportName);
+
+            airportDraw.enter()
+               .append("text")
+               .text(function(d) {
+                return d;
+               })
+               .attr("text-anchor", "right")
+               .attr("x", function(d) {
+                return 10;
+               })
+               .attr("y", function(d, i) {
+                return (barHeight + barPadding*2) * (i + 2) - (barHeight)/2;
+               })
+               .attr("font-family", "sans-serif") 
+               .attr("font-size", "11px")
+               .attr("fill", "black"); 
+            
+
+          }
+
+    
+          function drawChart(key) {
+
+            //pull data 
+            var destFlightArray = flights[d.origin][key];
+
+            var xScale = d3.scale.linear()
+                    .domain([0, 1]) //d3.max(d3.values(destFlightArray))
+                    .range([0, w*0.8]);
+
+            //Create SVG element
+            var svgBar = d3.select(".airportData")
+                  .append("svg")
+                  .attr("width", w)
+                  .attr("height", (barHeight + barPadding*2)*(destFlightArray.length + 3)  );
+
+            //define axis
+            var formatAsRoundedPercentage = d3.format(".0%")
+            var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient("top")
+                .ticks(6)
+                .tickFormat(formatAsRoundedPercentage);
+
+
+            // Add the X Axis 
+            svgBar.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + barLeftPadding + "," + (barHeight + barPadding) + ")")
+               .call(xAxis)
+               .selectAll("text")
+                  .style("text-anchor", "middle")
+
+            //Create bars
+            var bars = svgBar.selectAll(".bar")
+                       .data(destFlightArray);
+
+             bars.enter()
+                 .append("rect")
+                 .attr("class","bar")
+                 .attr("x", function(d) {
+                  return barLeftPadding;
+                 })
+                 .attr("y", function(d, i) {
+                  return (barHeight + barPadding*2) * (i+1) ; 
+                 })
+                 .attr("width", function(d) {
+                  return xScale(d);
+                 })
+                 .attr("height", barHeight )
+                 .attr("fill", "#1f77b4")
+                 .on("mouseover", function(d) {
+                    d3.select(this).transition().duration(100)
+                      .style("opacity", 1);
+
+                    div.transition().duration(100)
+                       .style("opacity", 1);
+
+                    div.text(formatAsPercentage(d))
+                       .style("left", d3.event.pageX + "px")
+                       .style("top", (d3.event.pageY - 3.5) + "px")
+
+                  })
+                 .on("mouseout", function(d) {
+
+                     d3.select(this)
+                      .transition().duration(100)
+                      .style("opacity", 1); 
+
+                     div.transition().duration(100)
+                      .style("opacity", 0);
+
+                  });
+
+
+          }
+
+          d3.select(".airportData").remove();
+          d3.selectAll(".line").remove();
+          
+          div.text(parseInt(d.flightCounts).toLocaleString() + " flights originating from " + d.airport + " in " + d.city + ", " +  d.state )
+                  .style("left", (parseFloat(d3.select(this).attr("cx")) + 50) + "px")
+                  .style("top", (parseFloat(d3.select(this).attr("cy")) + 25)  + "px");
+
+
+          d3.select("body").append("div").attr("class", "airportData");
+
+          drawLines();
+          drawAirport('destination');
+          drawChart('cancelRate');
+          drawChart('depDelayRate');
+          drawChart('arrDelayRate');
+          drawChart('divertRate');
+
+    })
+  
+  //set jfk as the default selection
+  var jfk = d3.select("#JFK");
+  jfk.on('click').call(jfk.node(), jfk.datum());
+
+
+});
+
+
+
+</script>
+</body>
+</html>
