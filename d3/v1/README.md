@@ -2,11 +2,11 @@ README
 ====================================================
 This repository consists of the following files/folders: 
 
-1. [data](https://github.com/LiChangNY/Udacity_d3/tree/master/data)
+1. [data](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v1/data)
   * [2008](http://stat-computing.org/dataexpo/2009/the-data.html) flights information data. The original data is about 650 MB so I used Python for processing the data.
   * [airport](http://stat-computing.org/dataexpo/2009/supplemental-data.html) information including city, state, latitude and longitude. 
-  * [script.ipynb](https://github.com/LiChangNY/Udacity_d3/blob/master/data/script.ipynb): For this project, I only used the contiguous U.S. states (thus excluding Alaska and Hawaii). 
-2. [js](https://github.com/LiChangNY/Udacity_d3/tree/master/js): .js files
+  * [script.ipynb](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v1/data/script.ipynb): For this project, I only used the contiguous U.S. states (thus excluding Alaska and Hawaii). 
+2. [js](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v1/js): .js files
 3. index.html: all versions
 
 ##Summary
