@@ -33,4 +33,3 @@ http://stackoverflow.com/questions/9063383/how-to-invoke-click-event-programmati
 5. Making a Simple Interactive Map Prototype with D3…For Total Beginners Who are Totally Impatient | suffen.us
 https://suffenus.wordpress.com/2014/01/07/making-interactive-maps-with-d3-for-total-beginners/
 6. Map example: dot and path http://mbostock.github.io/d3/talk/20111116/airports.html
-7. Let's Make a Map: http://bost.ocks.org/mike/bubble-map/

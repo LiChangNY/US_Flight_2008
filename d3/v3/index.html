@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
- <title>25 Busiest Airport by Cancellations, 2008</title>
+ <title>25 Worst Airports for Cancellations, 2008</title>
 
 <style type="text/css">
 h1 {
@@ -66,8 +66,8 @@ svgPie {
 
 </style>
 <body>
-  <h1>25 Busiest Airports by Cancellation Rates and Reasons, 2008</h1> 
-  <p> This project visualizes cancellation rate and largest cancellation reason for the 25 busiest airports by number of flights in 2008. Of these 25 airports, nearly 3 out of 4 are located near the coast, indicating the geographic advantage of coastal cities in the hub-and-spoke airline system. As indicated by the bubble size, on average, airports in the west coast have lower cancellation rates as compared to those in the east coast. More than three-thirds (16 out of 25) of these hub airports reported carrier-related causes including aircraft maintenance, baggage loading, and fueling, etc.,(read more <a href="http://www.rita.dot.gov/bts/help/aviation/html/understanding.html">here</a>), as the main reason for cancelled flights. (<a href="http://stat-computing.org/dataexpo/2009/the-data.html">Data Source</a>)<p>
+  <h1>25 Busiest Airports by Cancellation Rate, 2008</h1> 
+  <p> <p>
 
  <script src="js/d3.min.js"></script>
  <script src="js/queue.v1.min.js"></script>
@@ -79,7 +79,7 @@ svgPie {
 var width = 960,
     height = 500,
     opacityCircle = 0.5,
-    magnifier = 100,      
+    magnifier = 600,      
     formatAsPercentage = d3.format(".2%");
 
 //Define mapping method
@@ -104,22 +104,22 @@ var legend = svg.append("g")
     .attr("class", "legend")
     .attr("transform", "translate(" + (width - 100) + "," + (height - 20) + ")")
   .selectAll("g")
-    .data([0.01, 0.05])
+    .data([0.01, 0.03, 0.05])
   .enter().append("g");
 
 legend.append("circle")
-    .attr("cy", function (d) { return - Math.sqrt(d)*magnifier; })
-    .attr("r", function (d) { return Math.sqrt(d)*magnifier; })
+    .attr("cy", function (d) { return - d*magnifier; })
+    .attr("r", function (d) { return d*magnifier; })
     .attr('fill', 'none');
 
 legend.append("text")
-    .attr("y", function (d) { return - 2*Math.sqrt(d)*magnifier; })
+    .attr("y", function (d) { return - 2*d*magnifier; })
     .attr("dy", "1.3em")
     .attr("text-anchor", "middle")
     .text(d3.format("%"))
 
 legend.append("text")
-    .attr("y", function (d) { return - 65; })
+    .attr("y", function (d) { return - 95; })
     .attr("x", -20)
     .attr("dy", "1.3em")
     .attr("text-anchor", "start")
@@ -197,13 +197,13 @@ d3.csv("data/data.csv", function(error, data) {
 
   //add circles
   svg.selectAll(".circle")
-    .data(airportsArray.sort(function(a,b) {return b.cancelRate - a.cancelRate;})).enter()
+    .data(airportsArray).enter()
     .append("circle")
     .attr("class","circle")
     .attr("id", function (d) { return d.origin;})
     .attr("cx", function (d) { return projection([d.long, d.lat])[0]; })
     .attr("cy", function (d) { return projection([d.long, d.lat])[1]; })
-    .attr("r", function (d) {  return Math.sqrt(d.cancelRate)*magnifier ; }) 
+    .attr("r", function (d) {  return d.cancelRate*magnifier ; }) 
     .attr("fill", function (d) { return z(d['cancelReason'].indexOf(d3.max(d.cancelReason))); }) 
     .attr('opacity', opacityCircle)
     // add interactive tooltip
