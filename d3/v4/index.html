@@ -36,7 +36,7 @@ div.tooltip {
  width: 150px;
  height: 25px;
  padding: 2px;
- font-size: 11px;
+ font-size: 13px;
  pointer-events: none;
  font-family: sans-serif;
  color: black;
@@ -48,7 +48,7 @@ div.tooltip {
 
 .legend text {
   fill: #777;
-  font: 10px sans-serif;
+  font: 13px sans-serif;
 }
 
 .line {
@@ -57,15 +57,11 @@ stroke-width: 1;
 opacity: 0.5;
 }
 
-svgPie {
-  font: 8px sans-serif;
-}
-
 
 </style>
 <body>
   <h1>25 Busiest Airports by Cancellation Rates and Reasons, 2008</h1> 
-  <p> This project visualizes cancellation rate and largest cancellation reason for the 25 busiest airports by number of flights in 2008. Of these 25 airports, nearly 3 out of 4 are located near the coast, indicating the geographic advantage of coastal cities in the hub-and-spoke airline system. As indicated by the bubble size, on average, airports in the west coast have lower cancellation rates as compared to those in the east coast. More than three-thirds (16 out of 25) of these hub airports reported carrier-related causes including aircraft maintenance, baggage loading, and fueling, etc.,(read more <a href="http://www.rita.dot.gov/bts/help/aviation/html/understanding.html">here</a>), as the main reason for cancelled flights. (<a href="http://stat-computing.org/dataexpo/2009/the-data.html">Data Source</a>)<p>
+  <p> This project visualizes cancellation rate and largest cancellation reason for the 25 busiest airports by number of flights in 2008. About two-thirds of these 25 airports are located in the <a href="https://en.wikipedia.org/wiki/List_of_U.S._states_by_coastline">states by coastline</a>, indicating the geographic advantage of coastal cities in the hub-and-spoke airline system. As indicated by the bubble size, on average, airports in the west coast have lower cancellation rates as compared to those in the east coast. Nearly two-thirds (16 out of 25) of these hub airports reported carrier-related causes including aircraft maintenance, baggage loading, and fueling, etc.,(read more <a href="http://www.rita.dot.gov/bts/help/aviation/html/understanding.html">here</a>), as the main reason for cancelled flights. (<a href="http://stat-computing.org/dataexpo/2009/the-data.html">Data Source</a>)<p>
 
  <script src="js/d3.min.js"></script>
  <script src="js/queue.v1.min.js"></script>
@@ -74,7 +70,7 @@ svgPie {
 <script>
 
 //Define svg parameters
-var width = 960,
+var width = 1200,//960,
     height = 500,
     opacityCircle = 0.5,
     magnifier = 100,      
@@ -83,7 +79,7 @@ var width = 960,
 //Define mapping method
 var projection = d3.geo.albersUsa()
     .scale(1000)
-    .translate([width / 2, height / 2]);
+    .translate([width / 2.3, height / 2]);
 
 var path = d3.geo.path()
     .projection(projection);
@@ -100,7 +96,7 @@ var div = d3.select("body").append("div")
 //Create legend for circle size
 var legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", "translate(" + (width - 100) + "," + (height - 20) + ")")
+    .attr("transform", "translate(" + (width - 330) + "," + (height - 80) + ")")
   .selectAll("g")
     .data([0.01, 0.05])
   .enter().append("g");
@@ -117,38 +113,38 @@ legend.append("text")
     .text(d3.format("%"))
 
 legend.append("text")
-    .attr("y", function (d) { return - 65; })
-    .attr("x", -20)
+    .attr("y", function (d) { return - 68; })
+    .attr("x", -17)
     .attr("dy", "1.3em")
     .attr("text-anchor", "start")
     .text("Cancellation Rate")
 
 //Create color legend for indicating the biggest reason of cancellation
 var z = d3.scale.category10();
-var reasons = ['carrier (e.g. maintenance, aircraft cleaning, baggage loading, etc.)', 'extreme weather  such as tornado, blizzard or hurricane', 'national air system e.g. non-extreme weather conditions, heavy traffic volume, etc.' , 'security issues such as inoperative screening equipment and security breach'];
+var reasons = ['carrier, e.g. maintenance, aircraft cleaning', 'extreme weather, e.g. blizzard, hurricane', 'national air system like heavy traffic volume' ];
 var legend_color = svg.append("g")
     .attr("class", "legend")
     .attr("transform", "translate(" + (width - 100) + "," + (height - 20) + ")")
   .selectAll("g")
-    .data([0, 1, 2, 3])
+    .data([0, 1, 2])
   .enter().append("g");
 
   legend_color.append("circle")
       .attr("cy", function (d) { return - 25*(8-d);  })
-      .attr("cx", function(d) {return -15;})
+      .attr("cx", function(d) {return -245;})
       .attr("r", function (d) { return 5; })
       .attr("fill", function (d) {return z(d); })
       .attr('opacity', opacityCircle);
 
   legend_color.append("text")
       .attr("y", function (d) { return - 25*(8-d)+2.5; })
-      .attr("x", function (d) {return -5;})
+      .attr("x", function (d) {return -235;})
       .attr("text-anchor", "start")
       .text(function (d) {return reasons[d];})
 
   legend_color.append("text")
       .attr("y", - 220 )
-      .attr("x", -20)
+      .attr("x", -245)
       .attr("text-anchor", "start")
       .attr('fill', 'lightgrey')
       .text("#1 Cancellation Reason")
@@ -213,8 +209,8 @@ d3.csv("data/data.csv", function(error, data) {
          .style("opacity", 1);
           
       div.text(parseFloat(formatAsPercentage(d.cancelRate)).toLocaleString() + '% of ' + parseInt(d.flightCounts).toLocaleString() + " flights originating from " + d.airport + " (" + d.city + ", " +  d.state + ') were cancelled in 2008. Of all the cancelled flights, ' + formatAsPercentage(d3.max(d.cancelReason)) +  " were cancelled due to " + reasons[d['cancelReason'].indexOf(d3.max(d.cancelReason))] + ".")
-         .style("left", (parseFloat(d3.select(this).attr("cx")) - 120) + "px")
-         .style("top", (parseFloat(d3.select(this).attr("cy")) + 80) + "px");
+         .style("left", (parseFloat(d3.select(this).attr("cx")) - 155) + "px")
+         .style("top", (parseFloat(d3.select(this).attr("cy")) + 100) + "px");
 
     })
     .on("mouseout", function() {
