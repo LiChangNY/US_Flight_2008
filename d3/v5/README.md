@@ -1,12 +1,11 @@
 README
 ====================================================
-This project serves to fulfill Udacity P6 Make Effective Data Visualization. I made changes based on peer review and this is the latest version (v5) [here](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v5/). 
-The final version consists of the following files/folders. Previous versions can be found by changing v5 with v4, v3, etc. 
+This project serves to fulfill Udacity P6 Make Effective Data Visualization. I made changes based on peer review and this is the latest version (v5). The final version consists of the following files/folders. Previous versions can be found by changing v5 with v4, v3, etc., in the url.
 
 1. [data](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v5/data)
   * [2008](http://stat-computing.org/dataexpo/2009/the-data.html) flights information data. The original data is about 650 MB so I used Python for processing the data.
   * [airport](http://stat-computing.org/dataexpo/2009/supplemental-data.html) information including city, state, latitude and longitude. 
-  * [script.ipynb](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v5/data/script.ipynb): For this project, I only used the contiguous U.S. states (thus excluding Alaska and Hawaii). 
+  * [script.ipynb](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v5/data/script.ipynb): Script to process the data to the ideal format. 
 2. [js](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3/v5/js):.js files
 3. [final version (v5)](http://lichangny.github.io/d3/v5/index.html)
 4. [v4](http://lichangny.github.io/d3/v4/index.html)
@@ -43,7 +42,7 @@ Response from me: *Hi, Bhavin. Thank you so much for your comment. I think your 
 
 Follow up from @bhavin_329167828: *Mike Bostock suggests that you can overcome the problem of overlapping by always putting smaller bubbles over larger bubbles. Please see the data viz #6 at this link, where he discusses the problem of occlusion. http://bost.ocks.org/mike/bubble-map/6 The lie-factor on the bubbles seems to be greater than 1. If you notice, the area for the 3% bubble is more than 3x larger than the area of the 1% bubble. You can easily fix that by using the square root of the cancellation rate.*
 
-###[Feedback](https://discussions.udacity.com/t/project-6-feedback-request-25-worst-airports-for-cancellations-2008/32165) on [v2](http://lichangny.github.io/d3/v3/index.html)
+###[Feedback](https://discussions.udacity.com/t/project-6-feedback-request-25-worst-airports-for-cancellations-2008/32165) on [v3](http://lichangny.github.io/d3/v3/index.html)
 
 Based off of Bhavin's feedback, I changed the theme of the visualization again to 25 busiest airports and applied some formatting changes in [v3](http://lichangny.github.io/d3/v3/index.html). 
 
@@ -83,7 +82,7 @@ LC: *I changed to a lighter edge. As for transparency, in the beginning I wasnâ€
 
 LC: *I increased the font size as well as the placement.*
 
-After this revision, Charlie replied that I have addressed all her comments. I then showed the fourth to a third person, which is my husband. 
+After this revision, Charlie replied that I have addressed all her comments. I then showed the fourth version to the last reviewer-my husband. 
 
 ### Feedback on [v4](http://lichangny.github.io/d3/v4/index.html)
 
