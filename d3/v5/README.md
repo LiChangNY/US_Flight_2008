@@ -17,7 +17,10 @@ This project serves to fulfill Udacity P6 Make Effective Data Visualization. I m
 This project visualizes cancellation rate and largest cancellation reason for the 25 busiest airports by number of flights in 2008. About two-thirds of these 25 airports are located in the [states by coastline](https://en.wikipedia.org/wiki/List_of_U.S._states_by_coastline), indicating the geographic advantage of coastal cities in the hub-and-spoke airline system. As indicated by the bubble size, on average, airports in the west coast have lower cancellation rates as compared to those in the east coast. Nearly two-thirds (16 out of 25) of these hub airports reported carrier-related causes including aircraft maintenance, baggage loading, and fueling, etc.,(read more [here](http://www.rita.dot.gov/bts/help/aviation/html/understanding.html)), as the main reason for cancelled flights.
 
 ##Design
-The visualization is first based off of a geo-map of the 25 busiest airports in 2008. Circles represent the location of these airports. The circle size indicates cancellation rate. Each circle is colored by the top cancellation reason. Hovering each circle, readers will see a summary of the flight information of a given airport.   
+The reason why I chose to use a map is because it's very easy to find any patterns related to location, which is one of the most important messages I want to communicate to readers. 
+
+I had also thought about using three bar charts, with the first one showing number of flights, the second one showing cancellation rate, and the third one showing the largest cancellations reason. But as compared to a map where I can combine multiple visual encodings, such as shape, color, and size on one plot, the decision wasn't a hard one to make. So here is my final design: The visualization is based off of a geo-map of the 25 busiest airports in 2008. Circles represent the location of these airports. The circle size indicates cancellation rate. Each circle is colored by the top cancellation reason. Hovering each circle, readers will see a summary of the flight information of a given airport.   
+
 
 #Feedback
 I posted different versions to Udacity Forum and received feedback from 3 people as documented below. 

@@ -41,6 +41,7 @@ div.tooltip {
  color: black;
 }
 
+
 .legend circle {
   stroke: #ccc;
 }
@@ -93,10 +94,23 @@ var div = d3.select("body").append("div")
  .attr("class", "tooltip")
  .style('background', 'white');
 
+var divJFK = d3.select("body").append("div")
+ .attr("class", "tooltip")
+ .style('background', 'white');
+
+var divLGA = d3.select("body").append("div")
+ .attr("class", "tooltip")
+ .style('background', 'white');
+
+var divEWR = d3.select("body").append("div")
+ .attr("class", "tooltip")
+ .style('background', 'white');
+
 //Create legend for circle size
 var legend = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", "translate(" + (width - 330) + "," + (height - 80) + ")")
+    .attr("transform", 
+      "translate(" + (width - 330) + "," + (height - 80) + ")")
   .selectAll("g")
     .data([0.01, 0.05])
   .enter().append("g");
@@ -121,10 +135,13 @@ legend.append("text")
 
 //Create color legend for indicating the biggest reason of cancellation
 var z = d3.scale.category10();
-var reasons = ['carrier, e.g. maintenance, aircraft cleaning', 'extreme weather, e.g. blizzard, hurricane', 'national air system like heavy traffic volume' ];
+var reasons = ['carrier, e.g. maintenance, aircraft cleaning', 
+'extreme weather, e.g. blizzard, hurricane', 
+'national air system like heavy traffic volume' ];
 var legend_color = svg.append("g")
     .attr("class", "legend")
-    .attr("transform", "translate(" + (width - 100) + "," + (height - 20) + ")")
+    .attr("transform", 
+      "translate(" + (width - 100) + "," + (height - 20) + ")")
   .selectAll("g")
     .data([0, 1, 2])
   .enter().append("g");
@@ -159,7 +176,8 @@ d3.json("data/us.json", function(error, us) {
       .attr("d", path);
 
   svg.insert("path", ".graticule")
-      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .datum(topojson.mesh(us, us.objects.states, 
+        function(a, b) { return a !== b; }))
       .attr("class", "state-boundary")
       .attr("d", path);
 });
@@ -181,7 +199,10 @@ d3.csv("data/data.csv", function(error, data) {
           city: d.city,
           state: d.state,
           cancelRate: parseFloat(d.CancelRate),
-          cancelReason: [parseInt(d.Carrier)/parseInt(d.Cancelled), parseInt(d.Weather)/parseInt(d.Cancelled), parseInt(d.NationalAirSystem)/parseInt(d.Cancelled), parseInt(d.Security)/parseInt(d.Cancelled)] 
+          cancelReason: [parseInt(d.Carrier)/parseInt(d.Cancelled), 
+                         parseInt(d.Weather)/parseInt(d.Cancelled), 
+                         parseInt(d.NationalAirSystem)/parseInt(d.Cancelled), 
+                         parseInt(d.Security)/parseInt(d.Cancelled)] 
         }
     });
     
@@ -189,28 +210,69 @@ d3.csv("data/data.csv", function(error, data) {
       airportsArray.push(airports[key]);
     };
 
+    var animation = false;
+
   //add circles
   svg.selectAll(".circle")
-    .data(airportsArray.sort(function(a,b) {return b.cancelRate - a.cancelRate;})).enter()
+    .data(airportsArray.sort(
+      function(a,b) {return b.cancelRate - a.cancelRate;}))
+    .enter()
     .append("circle")
     .attr("class","circle")
     .attr("id", function (d) { return d.origin;})
     .attr("cx", function (d) { return projection([d.long, d.lat])[0]; })
     .attr("cy", function (d) { return projection([d.long, d.lat])[1]; })
     .attr("r", function (d) {  return Math.sqrt(d.cancelRate)*magnifier ; }) 
-    .attr("fill", function (d) { return z(d['cancelReason'].indexOf(d3.max(d.cancelReason))); }) 
+    .attr("fill", 
+      function (d) 
+      { return z(d['cancelReason'].indexOf(d3.max(d.cancelReason))); 
+    }) 
     .attr('opacity', opacityCircle)
     // add interactive tooltip
     .on("mouseover", function(d) {
-      d3.select(this).transition().duration(100)
-        .style("opacity", 1);
+      //console.log(d3.select('#JFK'));
 
-      div.transition().duration(100)
-         .style("opacity", 1);
-          
-      div.text(parseFloat(formatAsPercentage(d.cancelRate)).toLocaleString() + '% of ' + parseInt(d.flightCounts).toLocaleString() + " flights originating from " + d.airport + " (" + d.city + ", " +  d.state + ') were cancelled in 2008. Of all the cancelled flights, ' + formatAsPercentage(d3.max(d.cancelReason)) +  " were cancelled due to " + reasons[d['cancelReason'].indexOf(d3.max(d.cancelReason))] + ".")
-         .style("left", (parseFloat(d3.select(this).attr("cx")) - 170) + "px")
-         .style("top", (parseFloat(d3.select(this).attr("cy")) + 75) + "px");
+      var eastCoastAirports = ['JFK', 'LGA','EWR'];
+  
+      //define function to show airports
+      function showTooltip(dataDiv, data, cx, cy, root) {
+
+        dataDiv.transition().duration(100)
+           .style("opacity", 1);  
+
+        dataDiv.text(
+          parseFloat(formatAsPercentage(data.cancelRate)).toLocaleString() + 
+          '% of ' + parseInt(data.flightCounts).toLocaleString() + 
+          " flights originating from " + data.airport + " (" + 
+          data.city + ", " +   data.state + 
+          ') were cancelled in 2008. Of all the cancelled flights, ' + 
+          formatAsPercentage(d3.max(data.cancelReason)) +  
+          " were cancelled due to " + 
+          reasons[data['cancelReason'].indexOf(d3.max(data.cancelReason))] + 
+          ".")
+           .style("left", (parseFloat(d3.select(root).attr("cx")) + cx) + "px")
+           .style("top", (parseFloat(d3.select(root).attr("cy")) + cy) + "px");
+
+      }
+
+      if (eastCoastAirports.indexOf(this.id) > -1 ) { 
+
+        var jfk = airports['JFK'];
+        var lga = airports['LGA'];
+        var ewr = airports['EWR'];
+
+        showTooltip(divJFK,jfk, -50, -20, this);
+        showTooltip(divLGA,lga, 50, 120, this);
+        showTooltip(divEWR,ewr, -170, 120, this);
+
+      } else {
+      
+        d3.select(this).transition().duration(100)
+          .style("opacity", 1);
+
+        showTooltip(div, d, -170, 75, this);
+      } 
+
 
     })
     .on("mouseout", function() {
@@ -221,6 +283,16 @@ d3.csv("data/data.csv", function(error, data) {
 
        div.transition().duration(100)
         .style("opacity", 0);
+
+       divJFK.transition().duration(100)
+        .style("opacity", 0); 
+
+       divLGA.transition().duration(100)
+        .style("opacity", 0); 
+       
+       divEWR.transition().duration(100)
+        .style("opacity", 0); 
+
     });
 
 })
