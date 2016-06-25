@@ -1,4 +1,4 @@
-This repo is a showcase of visualizations I have made before. 
+This repo is a showcase of visualizations I have made before. I also have a [blog](http://www.lilychang.net/) which will be migrated here in the near future.
 
 ##[d3](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3) folder: US Flight Information 2008.
 * This project serves to fulfill Udacity P6 Make Effective Data Visualization. Per requirements, I am required to create individual folders for each major revisions. 
