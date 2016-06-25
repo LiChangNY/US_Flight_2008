@@ -1,0 +1,6 @@
+{
+  "name": "Used d3 to Visualize 2008 US Flight Infomation",
+  "tagline": "",
+  "body": "This repo is a showcase of visualizations I have made before. I also have a [blog](http://www.lilychang.net/) which will be migrated here in the near future.\r\n\r\n##[d3](https://github.com/LiChangNY/LiChangNY.github.io/tree/master/d3) folder: US Flight Information 2008.\r\n* This project serves to fulfill Udacity P6 Make Effective Data Visualization. Per requirements, I am required to create individual folders for each major revisions. \r\n* [V5](http://lichangny.github.io/d3/v5/) fulfills the project requirements. But my favorite is definitely [V1](http://lichangny.github.io/d3/v1/), because it's the most dashboardy version. ^^ Happy d3!!\r\n\r\n\r\nIf you clone this repo to you local machine, open your terminal and type the following command so you make changes and test in Chrome.  \r\n<code>open -a Google\\ Chrome --args --disable-web-security</code>",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
