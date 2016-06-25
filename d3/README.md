@@ -1,2 +1,0 @@
-#US Flight Information 2008
-This project serves to fulfill Udacity P6 Make Effective Data Visualization. Per requirements, I am required to create individual folders for each major revisions. Happy d3!!
